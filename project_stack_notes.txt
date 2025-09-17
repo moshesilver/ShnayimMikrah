@@ -1,0 +1,35 @@
+🔹 Core App Setup
+-Expo → handles React Native setup, device testing, builds.
+-React Navigation (@react-navigation/native) → for switching screens (Home, Parsha, Settings).
+-TypeScript (optional but recommended) → for cleaner, safer code.
+
+🔹 Data & State Management
+-AsyncStorage (@react-native-async-storage/async-storage) → save local progress (e.g., which pesukim/aliyos are checked off).
+-React Context or Zustand → lightweight global state management (e.g., storing user preferences like breakdown type).
+-Redux is overkill here, unless you expand a lot later.
+
+🔹 UI & Styling
+-React Native Paper or Native Base → prebuilt components (buttons, checkboxes, lists, modals) with nice design defaults.
+-React Native RTL support → ensure Hebrew text aligns properly (React Native handles textAlign: "right" pretty well).
+-Expo Fonts (expo-font) → load nicer Hebrew/English fonts (can make a big readability difference).
+
+🔹 Networking
+-Axios (or Fetch API) → to call Sefaria API (or another Torah text API).
+-Consider adding a simple caching layer (AsyncStorage again) so you don’t have to fetch the same parsha repeatedly.
+
+🔹 Calendar & Weekly Updates
+-Hebcal API → to figure out the current week’s parsha.
+-Example: https://www.hebcal.com/shabbat?cfg=json&geonameid=3448439&m=50 (returns this week’s parsha).
+-Combine Hebcal (for parsha name) + Sefaria (for text).
+
+🔹 Optional Enhancements
+-React Native Reanimated → for smooth animations (not required but makes UI feel polished).
+-React Native Paper’s Dialogs → for things like “Choose breakdown method (aliyah/pasuk/whole)”.
+-Expo Notifications → later, if you want to add gentle reminders like “don’t forget Shnayim Mikrah this week.”
+
+/src
+  /components   # buttons, text display, etc.
+  /screens      # Home, Parsha, Settings
+  /utils        # API helpers (Hebcal, Sefaria)
+  /context      # global state (prefs, progress)
+  App.tsx

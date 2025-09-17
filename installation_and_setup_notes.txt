@@ -1,0 +1,116 @@
+🔹 Setup
+
+Issue: Initialize Expo project
+
+Create new Expo app with npx create-expo-app shnayim-mikrah.
+
+Push initial commit to GitHub.
+Labels: setup
+
+Issue: Add navigation system
+
+Install React Navigation libraries.
+
+Create ParshaScreen as placeholder.
+
+Verify navigation between HomeScreen and ParshaScreen.
+Labels: setup, navigation
+
+Issue: Setup ESLint + Prettier
+
+Configure linting/formatting for consistent code style.
+Labels: setup
+
+🔹 API / Data
+
+Issue: Fetch parsha name from Hebcal
+
+Write utility to call Hebcal API.
+
+Display current week’s parsha name on HomeScreen.
+Labels: API
+
+Issue: Fetch parsha text from Sefaria
+
+Write function to fetch pesukim for given parsha.
+
+Display raw text on ParshaScreen.
+Labels: API, text
+
+Issue: Handle API loading + error states
+
+Show loading spinner while fetching.
+
+Show error message if fetch fails.
+Labels: API, UI
+
+🔹 UI / Text
+
+Issue: Display Hebrew text properly
+
+Apply right-to-left formatting.
+
+Set base font size + line height for readability.
+Labels: UI, text
+
+Issue: Add separators between pesukim
+
+Append colon or line break at end of each pasuk.
+
+Verify readability.
+Labels: UI, text
+
+Issue: Add scrollable view for long parshiyos
+
+Wrap text in ScrollView.
+
+Test on phone for smooth scrolling.
+Labels: UI
+
+Issue: Add breakdown toggle (whole / aliyah / pasuk)
+
+Add UI buttons/tabs.
+
+Write logic to split text accordingly.
+Labels: UI, logic
+
+🔹 Storage / Progress
+
+Issue: Add checkboxes for completion
+
+Add checkbox next to each aliyah/pasuk.
+
+Update UI when checked.
+Labels: UI, storage
+
+Issue: Save progress with AsyncStorage
+
+Store checked items locally.
+
+Reload state when reopening app.
+Labels: storage
+
+Issue: Reset progress weekly
+
+Clear saved state when parsha changes.
+
+Verify with Hebcal API data.
+Labels: storage, logic
+
+🔹 Polish
+
+Issue: Add basic settings screen
+
+Allow user to select default breakdown method (aliyah/pasuk/whole).
+
+Save preference with AsyncStorage.
+Labels: UI, storage
+
+Issue: Test on Android + iOS with Expo Go
+
+Run app on physical Android device.
+
+Run app on iOS device (if available).
+
+Confirm Hebrew renders consistently.
+Labels: testing
