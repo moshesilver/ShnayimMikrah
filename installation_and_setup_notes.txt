@@ -32,7 +32,7 @@ Labels: API
 
 Issue: Fetch parsha text from Sefaria
 
-Write function to fetch pesukim for given parsha.
+Write function to fetch psukim for given parsha.
 
 Display raw text on ParshaScreen.
 Labels: API, text
@@ -53,7 +53,7 @@ Apply right-to-left formatting.
 Set base font size + line height for readability.
 Labels: UI, text
 
-Issue: Add separators between pesukim
+Issue: Add separators between psukim
 
 Append colon or line break at end of each pasuk.
 
