@@ -1,5 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { FlatList, Text, useWindowDimensions, View } from 'react-native';
+import {
+  ActivityIndicator,
+  FlatList,
+  Text,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 import RenderHTMLBase from 'react-native-render-html';
 import { parshaStyles } from '../src/styles/parshaStyles.ts';
 import { toHebrewNumeral } from '../src/utils/toHebrewNumeral.ts';
@@ -88,7 +94,8 @@ export default function ParshaScreen() {
   if (loading) {
     return (
       <View style={parshaStyles.loadingContainer}>
-        <Text>Loading Parsha…</Text>
+        <ActivityIndicator size="large" color="#007AFF" />
+        <Text style={parshaStyles.loadingText}>Loading Parsha…</Text>
       </View>
     );
   }
