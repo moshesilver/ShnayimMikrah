@@ -1,21 +1,56 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useNavigation } from 'expo-router';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {
   ActivityIndicator,
+  Animated,
   FlatList,
   Text,
   useWindowDimensions,
   View,
 } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { runOnJS } from 'react-native-reanimated';
 import RenderHTMLBase from 'react-native-render-html';
 import { parshaStyles } from '../src/styles/parshaStyles.ts';
 import { toHebrewNumeral } from '../src/utils/toHebrewNumeral.ts';
 const RenderHTML = RenderHTMLBase as unknown as React.ComponentType<any>;
+
+const PasukItem = React.memo(
+  ({ item, width }: { item: string; width: number }) => (
+    <View style={parshaStyles.pasukContainer}>
+      <RenderHTML
+        contentWidth={width}
+        source={{ html: item }}
+        baseStyle={parshaStyles.hebrewText}
+      />
+    </View>
+  ),
+  (prev, next) => prev.item === next.item && prev.width === next.width,
+);
 
 export default function ParshaScreen() {
   const [psukim, setPsukim] = useState<string[]>([]);
   const [parshaName, setParshaName] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const { width } = useWindowDimensions();
+
+  const [fullScreen, setFullScreen] = useState(false);
+  const navigation = useNavigation();
+  const mountedRef = useRef(true);
+  const titleOpacity = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -47,10 +82,10 @@ export default function ParshaScreen() {
         const flattened: string[] = [];
 
         raw.forEach((perek: any, i: number) => {
-          /* if (Array.isArray(perek)) { */
           const pasukNumberOffset = i === 0 ? startPasuk : 1;
           perek.forEach((pasuk: string, j: number) => {
             const pasukNumber = pasukNumberOffset + j;
+            // should perek be marked for first pasuk of parsha even if not first pasuk of perek?
             if (pasukNumber === 1 /* || (i === 0 && j === 0) */) {
               flattened.push(`<h2>פרק ${toHebrewNumeral(i + startPerek)}</h2>`);
             }
@@ -58,9 +93,6 @@ export default function ParshaScreen() {
               `<p><b>${toHebrewNumeral(pasukNumber)}.</b> ${pasuk}</p>`,
             );
           });
-          /* } else if (typeof perek === 'string') {
-            flattened.push(`<p>${perek}</p>`);
-          } */
         });
 
         if (!cancelled) setPsukim(flattened);
@@ -75,20 +107,66 @@ export default function ParshaScreen() {
     };
   }, []);
 
-  // Memoize HTML wrapping for efficiency
-  const psukimHtml = useMemo(() => psukim.map((v) => `<p>${v}</p>`), [psukim]);
+  const flatListContainerStyle = useMemo(
+    () => ({
+      paddingTop: fullScreen ? 12 : 0,
+      paddingBottom: 40,
+    }),
+    [fullScreen],
+  );
 
   const renderItem = useCallback(
-    ({ item }: { item: string }) => (
-      <View style={parshaStyles.pasukContainer}>
-        <RenderHTML
-          contentWidth={width}
-          source={{ html: item }}
-          baseStyle={parshaStyles.hebrewText}
-        />
-      </View>
-    ),
+    ({ item }: { item: string }) => <PasukItem item={item} width={width} />,
     [width],
+  );
+
+  const toggleInProgress = useRef(false);
+
+  const handleToggleFullScreen = useCallback(() => {
+    if (toggleInProgress.current) return;
+    toggleInProgress.current = true;
+
+    setFullScreen((prev) => {
+      const newFull = !prev;
+
+      // Fade animation for title
+      Animated.timing(titleOpacity, {
+        toValue: newFull ? 0 : 1,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
+
+      // Single requestAnimationFrame for smoother update
+      requestAnimationFrame(() => {
+        try {
+          if (navigation && typeof navigation.setOptions === 'function') {
+            navigation.setOptions({
+              headerShown: !newFull,
+              tabBarStyle: {
+                display: newFull ? 'none' : 'flex',
+              },
+            });
+          }
+        } catch (err) {
+          console.error('navigation.setOptions error:', err);
+        }
+        toggleInProgress.current = false;
+      });
+
+      return newFull;
+    });
+  }, [navigation, titleOpacity]);
+
+  // Gesture: double tap using runOnJS to safely call JS functions from gesture context
+  const doubleTapGesture = useMemo(
+    () =>
+      Gesture.Tap()
+        .numberOfTaps(2)
+        .maxDelay(300)
+        .onEnd(() => {
+          runOnJS(handleToggleFullScreen)();
+        }),
+    [handleToggleFullScreen],
   );
 
   if (loading) {
@@ -101,18 +179,29 @@ export default function ParshaScreen() {
   }
 
   return (
-    <View style={parshaStyles.container}>
-      {parshaName && (
-        <Text style={parshaStyles.titleText}>
-          {/* פרשת  */}
-          {parshaName}
-        </Text>
-      )}
-      <FlatList
-        data={psukimHtml}
-        keyExtractor={(_, i) => i.toString()}
-        renderItem={renderItem}
-      />
-    </View>
+    <>
+      {/* <StatusBar hidden={fullScreen} animated={false} /> */}
+      <GestureDetector gesture={doubleTapGesture}>
+        <View style={parshaStyles.container}>
+          {parshaName && (
+            <Animated.View style={{ opacity: titleOpacity }}>
+              <Text style={parshaStyles.titleText}>{parshaName}</Text>
+            </Animated.View>
+          )}
+          <FlatList
+            data={psukim}
+            keyExtractor={(_, i) => i.toString()}
+            renderItem={({ item }) => <PasukItem item={item} width={width} />}
+            contentContainerStyle={flatListContainerStyle}
+            initialNumToRender={15}
+            maxToRenderPerBatch={8}
+            updateCellsBatchingPeriod={75}
+            windowSize={10}
+            extraData={fullScreen}
+            removeClippedSubviews={false}
+          />
+        </View>
+      </GestureDetector>
+    </>
   );
 }
