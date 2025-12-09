@@ -5,8 +5,8 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Tabs>
-        <Tabs.Screen name="index" options={{ title: 'Home' }} />
-        <Tabs.Screen name="parsha" options={{ title: 'Parsha' }} />
+        <Tabs.Screen name="(tabs)/index" options={{ title: 'Home' }} />
+        <Tabs.Screen name="(tabs)/parsha" options={{ title: 'Parsha' }} />
       </Tabs>
     </GestureHandlerRootView>
   );
