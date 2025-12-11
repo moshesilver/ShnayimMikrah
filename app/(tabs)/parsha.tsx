@@ -1,4 +1,4 @@
-import { useNavigation } from 'expo-router';
+import { useLocalSearchParams, useNavigation } from 'expo-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -31,6 +31,7 @@ const PasukItem = React.memo(
 );
 
 export default function ParshaScreen() {
+  const { mode, aliyah } = useLocalSearchParams();
   const [displayPsukim, setDisplayPsukim] = useState<string[]>([]);
   const [parshaName, setParshaName] = useState<string | null>(null);
   const [parshaStart, setParshaStart] = useState<{
@@ -74,6 +75,8 @@ export default function ParshaScreen() {
         const name = parshaItem.displayValue.he;
         if (!cancelled) setParshaName(name);
 
+        const aliyahBreakup = parshaItem?.extraDetails.aliyot.slice(0, 7);
+
         const textRes = await fetch(
           `https://www.sefaria.org/api/texts/${url}?language=he&commentary=0&context=0`,
         );
@@ -91,29 +94,28 @@ export default function ParshaScreen() {
 
         const raw = textJson.he || [];
 
-        const flattened: string[] = [];
+        const flattenedFull: string[] = [];
+        const flattenedPartial: string[] = [];
 
-        raw.forEach((perek: any, i: number) => {
-          const pasukNumberOffset = i === 0 ? parshaStart?.pasuk! : 1;
+        if (mode === 'full') {
+          flattenedFull.push(...flattenEntireParsha(raw));
+        }
 
-          perek.forEach((pasuk: string, j: number) => {
-            const pasukNumber = pasukNumberOffset + j;
+        if (mode === 'aliyah') {
+          const { startPerek, startPasuk, endPerek, endPasuk } =
+            parseSectionRef(aliyahBreakup[+aliyah - 1]); // maybe fix this?
+          flattenedPartial.push(
+            ...flattenAliyah(raw, startPerek, startPasuk, endPerek, endPasuk),
+          );
+        }
 
-            // should perek be marked for first pasuk of parsha even if not first pasuk of perek?
-            const shouldShowHeader = pasukNumber === 1 || (i === 0 && j === 0);
-
-            const perekHeader = shouldShowHeader
-              ? `<h2>פרק ${toHebrewNumeral(i + parshaStart?.perek!)}</h2>`
-              : '';
-
-            flattened.push(
-              perekHeader +
-                `<p><b>${toHebrewNumeral(pasukNumber)}.</b> ${pasuk}</p>`,
-            );
-          });
-        });
-
-        if (!cancelled) setDisplayPsukim(flattened);
+        if (!cancelled) {
+          if (mode === 'full') {
+            setDisplayPsukim(flattenedFull);
+          } else if (mode === 'aliyah') {
+            setDisplayPsukim(flattenedPartial);
+          }
+        }
       } catch (e) {
         console.error(e);
       } finally {
@@ -123,7 +125,86 @@ export default function ParshaScreen() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [mode, aliyah]);
+
+  const flattenEntireParsha = (rawData: any) => {
+    const flattened: string[] = [];
+
+    rawData.forEach((perek: any, i: number) => {
+      const pasukNumberOffset = i === 0 ? parshaStart?.pasuk! : 1;
+
+      perek.forEach((pasuk: string, j: number) => {
+        const pasukNumber = pasukNumberOffset + j;
+
+        // should perek be marked for first pasuk of parsha even if not first pasuk of perek?
+        const shouldShowHeader = pasukNumber === 1 || (i === 0 && j === 0);
+
+        const perekHeader = shouldShowHeader
+          ? `<h2>פרק ${toHebrewNumeral(i + parshaStart?.perek!)}</h2>`
+          : '';
+
+        flattened.push(
+          perekHeader +
+            `<p><b>${toHebrewNumeral(pasukNumber)}.</b> ${pasuk}</p>`,
+        );
+      });
+    });
+    return flattened;
+  };
+
+  const flattenAliyah = (
+    rawData: any,
+    startPerek: number,
+    startPasuk: number,
+    endPerek: number,
+    endPasuk: number,
+  ) => {
+    const flattened: string[] = [];
+
+    let actualPerek = startPerek;
+    let actualPasuk = startPasuk;
+
+    let numPerekOfParsha = startPerek - parshaStart?.perek!;
+
+    for (
+      let relativePerek = numPerekOfParsha;
+      relativePerek < rawData.length;
+      relativePerek++, actualPerek++
+    ) {
+      // if first perek of aliyah, start at startPasuk, else start at 0
+      let relativePasuk =
+        relativePerek === numPerekOfParsha ? startPasuk - 1 : 0;
+
+      // special case for first perek of parsha
+      if (numPerekOfParsha === 0) {
+        relativePasuk = startPasuk - parshaStart?.pasuk!;
+      }
+
+      for (
+        ;
+        relativePasuk < rawData[relativePerek].length;
+        relativePasuk++, actualPasuk++
+      ) {
+        const isEndPerek = relativePerek === endPerek - parshaStart?.perek!;
+        const isEndPasuk = relativePasuk === endPasuk - 1;
+
+        // should perek be marked for first pasuk of parsha even if not first pasuk of perek?
+        const perekHeader =
+          actualPasuk === 0
+            ? `<h2>פרק ${toHebrewNumeral(actualPerek)}</h2>`
+            : '';
+
+        flattened.push(
+          perekHeader +
+            `<p><b>${toHebrewNumeral(actualPasuk)}.</b> ${rawData[relativePerek][relativePasuk]}</p>`,
+        );
+
+        // stop exactly at aliyah end
+        if (isEndPerek && isEndPasuk) return flattened;
+      }
+    }
+    return flattened;
+  };
 
   const renderItem = useCallback(
     ({ item }: { item: string }) => <PasukItem item={item} width={width} />,
