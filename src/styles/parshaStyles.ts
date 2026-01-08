@@ -25,7 +25,20 @@ export const parshaStyles = StyleSheet.create({
     fontSize: 18,
     lineHeight: 28,
   },
-  loadingText: { marginTop: 10, fontSize: 16, color: '#555' },
+  englishText: {
+    fontSize: 14,
+    opacity: 0.8,
+  },
+  pasukNumber: {
+    fontSize: 12,
+    opacity: 0.6,
+    marginBottom: 4,
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#555',
+  },
 
   // Containers
   pasukContainer: { marginBottom: 12 },
