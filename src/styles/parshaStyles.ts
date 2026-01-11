@@ -42,4 +42,22 @@ export const parshaStyles = StyleSheet.create({
 
   // Containers
   pasukContainer: { marginBottom: 12 },
+
+  // Aliyah
+  aliyahBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingVertical: 6,
+  },
+  aliyahButton: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 6,
+    backgroundColor: '#eee',
+    color: '#000',
+  },
+  aliyahButtonActive: {
+    backgroundColor: '#007AFF',
+    color: '#fff',
+  },
 });

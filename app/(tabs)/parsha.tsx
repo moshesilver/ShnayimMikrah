@@ -13,13 +13,19 @@ import { State, TapGestureHandler } from 'react-native-gesture-handler';
 import { VerseRow } from '../../src/components/VerseRow.tsx';
 import { useParsha } from '../../src/hooks/useParsha.ts';
 import { selectAliyah } from '../../src/parsha/selectors.ts';
-import type { BookName, ShnayimMikrahVerse } from '../../src/parsha/types.ts';
+import {
+  AliyahNumber,
+  type BookName,
+  type ShnayimMikrahVerse,
+} from '../../src/parsha/types.ts';
 import { parshaStyles } from '../../src/styles/parshaStyles.ts';
 
 const verseId = (verse: ShnayimMikrahVerse, book: BookName) =>
   `${book}:${verse.chapter}:${verse.verse}`;
 
 export default function ParshaScreen({ fullRef }: { fullRef?: string }) {
+  const [aliyah, setAliyah] = useState<AliyahNumber | undefined>(undefined);
+
   const { parsha, loading } = useParsha(fullRef);
   const { width } = useWindowDimensions();
   const navigation = useNavigation();
@@ -78,7 +84,7 @@ export default function ParshaScreen({ fullRef }: { fullRef?: string }) {
     );
   }
 
-  const verses = selectAliyah(parsha); // default all verses
+  const verses = selectAliyah(parsha, aliyah);
 
   return (
     <>
@@ -97,6 +103,31 @@ export default function ParshaScreen({ fullRef }: { fullRef?: string }) {
               {parsha.nameHebrew ?? parsha.name}
             </Text>
           </Animated.View>
+
+          <View style={parshaStyles.aliyahBar}>
+            {[1, 2, 3, 4, 5, 6, 7].map((a) => (
+              <Text
+                key={a}
+                style={[
+                  parshaStyles.aliyahButton,
+                  aliyah === a && parshaStyles.aliyahButtonActive,
+                ]}
+                onPress={() => setAliyah(a as AliyahNumber)}
+              >
+                {a}
+              </Text>
+            ))}
+
+            <Text
+              style={[
+                parshaStyles.aliyahButton,
+                aliyah === undefined && parshaStyles.aliyahButtonActive,
+              ]}
+              onPress={() => setAliyah(undefined)}
+            >
+              All
+            </Text>
+          </View>
 
           {/* Verses list */}
           <FlatList
