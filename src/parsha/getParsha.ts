@@ -11,6 +11,6 @@ export async function getWeeklyParsha(timezone: string, diaspora = 1) {
   return {
     fullRef: item.ref,
     aliyot: item.extraDetails.aliyot,
-    name: item.displayValue.en,
+    name: item.displayValue.he ?? item.displayValue.en,
   };
 }

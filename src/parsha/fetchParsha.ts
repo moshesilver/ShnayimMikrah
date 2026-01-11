@@ -54,7 +54,8 @@ export async function fetchParsha({
 
   // Determine book and parsha name
   book = textJson.book as BookName;
-  parshaName ??= textJson.title as ParshaName;
+  parshaName ??= (textJson.displayValue.he ??
+    textJson.displayValue.en) as ParshaName;
 
   // Build verses
   const verses = buildVerses(

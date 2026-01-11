@@ -3,6 +3,7 @@ import { Text, useWindowDimensions, View } from 'react-native';
 import RenderHTMLBase from 'react-native-render-html';
 import type { BookName, ShnayimMikrahVerse } from '../parsha/types.ts';
 import { parshaStyles } from '../styles/parshaStyles.ts';
+import { toHebrewNumeral } from '../utils/toHebrewNumeral.ts';
 const RenderHTML = RenderHTMLBase as any;
 
 const verseId = (verse: ShnayimMikrahVerse, book: BookName) =>
@@ -20,7 +21,7 @@ export const VerseRow = React.memo(
     return (
       <View style={parshaStyles.pasukContainer}>
         <Text style={parshaStyles.pasukNumber}>
-          {verse.chapter}:{verse.verse}
+          {toHebrewNumeral(verse.chapter)}:{toHebrewNumeral(verse.verse)}
         </Text>
 
         <RenderHTML
