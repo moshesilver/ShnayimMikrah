@@ -1,29 +1,24 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { CachedParsha } from '../parsha/cacheTypes.ts';
-import type { ParshaName, BookName } from '../parsha/types.ts';
 
-function storageKey(book: BookName, parsha: ParshaName) {
-  return `parsha:${book}:${parsha}`;
+function storageKey(ref: string) {
+  return `parsha:${ref}`;
 }
 
 export async function saveCachedParsha(parsha: CachedParsha) {
-  const key = storageKey(parsha.book, parsha.name);
+  const key = storageKey(parsha.fullRef);
   await AsyncStorage.setItem(key, JSON.stringify(parsha));
 }
 
 export async function loadCachedParsha(
-  book: BookName,
-  parsha: ParshaName,
+  ref: string,
 ): Promise<CachedParsha | null> {
-  const key = storageKey(book, parsha);
+  const key = storageKey(ref);
   const raw = await AsyncStorage.getItem(key);
   return raw ? JSON.parse(raw) : null;
 }
 
-export async function hasCachedParsha(
-  book: BookName,
-  parsha: ParshaName,
-): Promise<boolean> {
-  const key = storageKey(book, parsha);
+export async function hasCachedParsha(ref: string): Promise<boolean> {
+  const key = storageKey(ref);
   return (await AsyncStorage.getItem(key)) !== null;
 }
