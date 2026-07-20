@@ -1,50 +1,43 @@
-# Welcome to your Expo app 👋
+# ShnayimMikrah
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+ShnayimMikrah is a mobile-first application prototype intended to help users perform the traditional practice of Shnayim Mikrah (reading the weekly Torah portion twice, with a translation read once). The project was designed to be a highly customizable platform so that each user could configure the app to match their personal or communal customs for how Shnayim Mikrah is performed.
 
-## Get started
+Important: this repository is an incomplete, experimental prototype. Development stopped with unresolved errors and unfinished features. The codebase is provided as-is for reference, learning, or further development.
 
-1. Install dependencies
+## Project purpose and vision
 
-   ```bash
-   npm install
-   ```
+The app's goal is to make it easy to follow Shnayim Mikrah consistently while supporting diverse minhagim (customs). Rather than a single rigid workflow, the design emphasizes configurable reading flows so users can:
 
-2. Start the app
+- Choose how to divide the weekly portion (by aliyah, by verse ranges, or custom splits).
+- Define repetition and ordering rules (e.g., two Hebrew readings + one translation).
+- Decide whether to read the just the text, or include translations and/or commentaries.
+- Configure reminders, scheduling preferences, and progress tracking to match personal routines.
+- Use localized translations and toggle presentation options (font size, right-to-left support, verse highlighting) to match comfort and custom.
 
-   ```bash
-   npx expo start
-   ```
+## What’s in this repo
 
-In the output, you'll find options to open the app in a
+- A React Native / Expo app scaffold (TypeScript) with an app directory following file-based routing.
+- UI components and early data models for parsha navigation, reading segments, and user preferences.
+- Early work toward scheduling and offline-friendly reading.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+Because the project is incomplete, several screens, data flows, and error-handling paths are either missing or unstable.
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## Current status & limitations
 
-## Get a fresh project
+- Prototype / incomplete — not production-ready.
+- Several runtime errors and incomplete flows prevent full usage.
+- Customization was not fully implemented.
+- No stable backend or sync service included; state persistence is partial.
+- Tests, accessibility work, and many screens are unfinished.
 
-When you're ready, run:
+If you plan to run the app locally, expect to encounter issues.
 
-```bash
-npm run reset-project
-```
+## Intended features (planned)
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+- Per-user customizable reading workflows (division of parsha, repeat rules, reading order)
+- Fine-grained presentation controls (fonts, line spacing, RTL/LTR)
+- Reminders and calendar integration
+- Offline-first data model with optional cloud sync
+- Export/import of custom workflows and reading progress
 
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Note: Because the project is unfinished, running it may produce errors.
